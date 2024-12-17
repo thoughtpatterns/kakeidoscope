@@ -5,15 +5,26 @@
 
 include config.mk
 
-OBJ = kakeidoscope.o
+CFG = config.h $(MB)/config.h
+LIB = $(MB)/matching-brackets.h
+SRC = kakeidoscope.c $(MB)/matching-brackets.c
+OBJ = $(SRC:.c=.o)
 
 all: kakeidoscope
 
 .c.o:
 	$(CC) -o $@ -c $(KAKCFLAGS) $<
 
+config.h:
+	cp config.def.h $@
+
+$(MB)/config.h:
+	cp $(MB)/config.def.h $@
+
+$(OBJ): $(CFG)
+
 kakeidoscope: $(OBJ)
-	$(CC) $(OBJ) -o $@
+	$(CC) $(LIB) $(OBJ) -o $@
 
 clean:
 	rm -f kakeidoscope $(OBJ)

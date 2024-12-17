@@ -5,7 +5,7 @@ A plugin for Kakoune which implements rainbow bracket highlighting.
 ## Installation
 
 ```bash
-git clone https://git.sr.ht/~orchid/kakeidoscope
+git clone --recurse-submodules https://git.sr.ht/~orchid/kakeidoscope
 cd kakeidoscope/src
 make install # with elevated privileges
 cd ..

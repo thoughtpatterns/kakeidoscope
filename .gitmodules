@@ -1,0 +1,3 @@
+[submodule "src/matching-brackets"]
+	path = src/matching-brackets
+	url = git@git.sr.ht:~orchid/matching-brackets

@@ -2,11 +2,14 @@
 
 VERSION = 1.0
 
+MB = matching-brackets/src
+
 PREFIX = /usr/local
 MANPREFIX = $(PREFIX)/share/man
 
 KAKCFLAGS = -std=c99 -g -Og -D_POSIX_C_SOURCE=200809L -Wall -Wextra -Werror \
-	-pedantic -Wdeclaration-after-statement -Wno-unused-parameter -Wshadow \
-	-Wunused-macros -Wfloat-conversion -DVERSION=\"$(VERSION)\"
+	-pedantic  -Wshadow -Wdeclaration-after-statement -Wno-unused-parameter \
+	-Wno-unused-variable -Wunused-macros -Wfloat-conversion \
+	-DVERSION=\"$(VERSION)\"
 
 CC = cc
