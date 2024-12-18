@@ -8,8 +8,7 @@ PREFIX = /usr/local
 MANPREFIX = $(PREFIX)/share/man
 
 KAKCFLAGS = -std=c99 -g -Og -D_POSIX_C_SOURCE=200809L -Wall -Wextra -Werror \
-	-pedantic  -Wshadow -Wdeclaration-after-statement -Wno-unused-parameter \
-	-Wno-unused-variable -Wunused-macros -Wfloat-conversion \
-	-DVERSION=\"$(VERSION)\"
+	-pedantic -Wshadow -Wdeclaration-after-statement -Wunused-macros \
+	-Wfloat-conversion -Wno-unused-parameter -Wno-uninitialized
 
 CC = cc
