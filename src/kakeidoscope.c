@@ -18,26 +18,27 @@ static size_t strtoul_s(const char *);
 static void usage(void);
 
 /* the primary highlighter output format is
- *     set window kakeidoscope_range %val{timestamp} '<x>.<y>+1|<face>'...
+ *     set window kakeidoscope_range %val{timestamp} '<y>.<x>+1|<face>'...
  * thus, when checking whether to realloc s, we add HL_OFFSET to its length
  */
 static void make_hl(struct Bracket *first)
 {
-	size_t l = max_face_length(), m = 0, n = BUF_START;
+	size_t f = max_face_length(), l = 0, m = 0, n = BUF_START;
 	char *s = calloc_s(n, sizeof *s);
 
 	for (struct Bracket *b = first, *v = b; b; b = b->next, v = b) {
-		m = strlen(s) + l + num_length(b->x) + num_length(b->y) + HL_OFFSET;
+		l = strlen(s);
+		m = l + f + num_length(b->y) + num_length(b->x) + HL_OFFSET;
 		if (m > n)
 			s = realloc_s(s, sizeof s * (m + (n *= 2)));
 
-		sprintf(s, "%s '%zu.%zu+1|%s'", s, b->x, b->y,
+		sprintf(s + l, " '%zu.%zu+1|%s'", b->y, b->x,
 		    faces[b->n % LENGTH(faces)]);
 
 		free(v);
 	}
 
-	printf("set window kakeidoscope-ranges %%val{timestamp}%s\n", s);
+	printf("set window kakeidoscope_ranges %%val{timestamp}%s\n", s);
 
 	free(s);
 }
@@ -78,7 +79,7 @@ static size_t strtoul_s(const char *s)
 
 static void usage(void)
 {
-	die("usage: kakeidoscope <filename> <cursor_x> <cursor_y>");
+	die("usage: kakeidoscope <filename> <cursor_y> <cursor_x>");
 }
 
 int main(int argc, char **argv)
