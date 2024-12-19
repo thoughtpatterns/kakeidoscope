@@ -6,22 +6,17 @@ decl -hidden int-list kakeidoscope_window 0 0 0 0
 #     set window kakeidoscope_range %val{timestamp} '<y>.<x>+1|<face>'...
 
 def -docstring "color each selection" kakeidoscope-selections %{
-	eval -draft -itersel -save-regs "f|" -no-hooks %{
-		reg f nop
-		reg pipe %{
-			set -- $kak_window_range
+	eval -draft -itersel -no-hooks %sh{
+		set -- $kak_window_range
 
-			t="$(mktemp "${TMPDIR:-/tmp}/kakeidoscope.XXXXXX")"
-			cat > "$t"
+		t="$(mktemp "${TMPDIR:-/tmp}/kakeidoscope.XXXXXX")"
+		printf "%s" "$kak_selection" > "$t"
 
-			[ "$?" -eq 0 ] \
-				&& printf "%s\n" "$(kakeidoscope "$t" "$1" "$2")" \
-				|| printf "reg f fail kakeidoscope exited with non-zero status $?\n" > "$kak_command_fifo"
+		[ "$?" -eq 0 ] \
+			&& printf "%s\n" "$(kakeidoscope "$t" "$1" "$2")" \
+			|| printf "fail kakeidoscope exited with non-zero status $?\n"
 
-			rm -f "$t"
-		}
-		exec '|<ret>":y:<ret>'
-		%reg{f}
+		rm -f "$t"
 	}
 }
 
@@ -72,4 +67,4 @@ def -docstring "initialize kakeidoscope" kakeidoscope-init %{
 	hook global -group kakeidoscope WinCreate .* kakeidoscope-enable-window
 }
 
-# hook -once global KakBegin .* kakeidoscope-init
+hook -once global KakBegin .* kakeidoscope-init
