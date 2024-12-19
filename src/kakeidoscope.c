@@ -21,6 +21,7 @@ static void usage(void);
  *     set window kakeidoscope_range %val{timestamp} '<y>.<x>+1|<face>'...
  * thus, when checking whether to realloc s, we add HL_OFFSET to its length
  */
+
 static void make_hl(struct Bracket *first)
 {
 	size_t f = max_face_length(), l = 0, m = 0, n = BUF_START;
@@ -38,7 +39,7 @@ static void make_hl(struct Bracket *first)
 		free(v);
 	}
 
-	printf("set window kakeidoscope_ranges %%val{timestamp}%s\n", s);
+	printf("set window kakeidoscope_range %%val{timestamp}%s\n", s);
 
 	free(s);
 }
@@ -79,7 +80,7 @@ static size_t strtoul_s(const char *s)
 
 static void usage(void)
 {
-	die("usage: kakeidoscope <filename> <cursor_y> <cursor_x>");
+	die("usage: kakeidoscope <filename> <window_y> <window_x>");
 }
 
 int main(int argc, char **argv)
