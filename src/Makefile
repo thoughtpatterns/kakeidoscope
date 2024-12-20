@@ -33,12 +33,8 @@ install: all
 	mkdir -p "$(DESTDIR)$(PREFIX)/bin"
 	cp -f kakeidoscope "$(DESTDIR)$(PREFIX)/bin"
 	chmod 755 "$(DESTDIR)$(PREFIX)/bin/kakeidoscope"
-	mkdir -p "$(DESTDIR)$(MANPREFIX)/man1"
-	cp -f kakeidoscope.1 "$(DESTDIR)$(MANPREFIX)/man1"
-	chmod 644 "$(DESTDIR)$(MANPREFIX)/man1/kakeidoscope.1"
 
 uninstall:
-	rm -f "$(DESTDIR)$(PREFIX)/bin/kakeidoscope" \
-		"$(DESTDIR)$(MANPREFIX)/man1/kakeidoscope.1"
+	rm -f "$(DESTDIR)$(PREFIX)/bin/kakeidoscope"
 
 .PHONY: all debug clean install uninstall
