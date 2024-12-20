@@ -12,7 +12,7 @@ OBJ = $(SRC:.c=.o)
 
 all: kakeidoscope
 
-debug: KAKCFLAGS += -Og
+debug: KAKCFLAGS += -ggdb -Og
 debug: kakeidoscope
 
 .c.o:

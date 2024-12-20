@@ -1,0 +1,19 @@
+main() {
+	for i in b l r; do
+		eval "$i=$(mktemp kakeidoscope.XXXXXX)"
+	done
+
+	i=0 && n="$((10 ** 3))" && while [ "$((++i))" -le "$n" ]; do
+		printf "{ ( [ ( { } ) ] ) }\n" >> "$b"
+		printf "{ ( [ ( { { ( [ ( {\n" >> "$l"
+		printf "} ) ] ) } } ) ] ) }\n" >> "$r"
+	done
+
+	run "10000 balanced braces" "$b" \
+		"10000 left braces"     "$l" \
+		"10000 right braces"    "$r"
+
+	rm "$b" "$l" "$r"
+}
+
+main "$@"

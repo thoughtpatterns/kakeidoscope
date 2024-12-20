@@ -18,9 +18,9 @@ def -hidden -docstring "color each selection" kakeidoscope-selections %{
 	}
 }
 
+# %val{window_range} is zero-indexed, so we add an offset of one
 def -hidden -docstring "color the current view" kakeidoscope-view %{
 	eval -draft %sh{
-		set -x
 		set -- $kak_window_range
 		printf "%s\n%s\n" "select $(($1 + 1)).1,$(($1 + $3 + 1)).1" "kakeidoscope-selections"
 	}
