@@ -11,60 +11,44 @@
 #define DECIMAL 10
 #define HL_OFFSET 7
 
-static void make_hl(struct Bracket *);
-static size_t max_face_length(void);
+static void make_hl(struct Bracket *, size_t);
 static size_t num_length(size_t);
 static size_t strtoul_s(const char *);
 static void usage(void);
 
-/* the primary highlighter output format is
- *     set window kakeidoscope_range %val{timestamp} '<y>.<x>+1|<face>'...
- * thus, when checking whether to realloc s, we add HL_OFFSET to its length
- */
-
-static void make_hl(struct Bracket *first)
+static void make_hl(struct Bracket *head, size_t y)
 {
-	size_t f = max_face_length(), l = 0, m = 0, n = BUF_START;
+	size_t n = BUF_START, j = 0, k = 0, f, yy;
 	char *s = calloc_s(n, sizeof *s);
 
-	for (struct Bracket *b = first, *v = b; b; b = b->next, v = b) {
-		l = strlen(s);
-		m = l + f + num_length(b->y) + num_length(b->x) + HL_OFFSET;
-		if (m > n)
-			s = realloc_s(s, sizeof s * (m + (n *= 2)));
+	size_t l[length_faces];
+	for (size_t i = 0; i < length_faces; ++i)
+		l[i] = strlen(faces[i]);
 
-		sprintf(s + l, " '%zu.%zu+1|%s'", b->y, b->x,
-		    faces[b->n % LENGTH(faces)]);
+	for (struct Bracket *b = head, *v; b; b = v) {
+		f = b->n % length_faces, yy = b->y + y,
+		k += (j = num_length(yy) + num_length(b->x) + l[f] + HL_OFFSET);
 
-		free(v);
+		if (k > n)
+			s = realloc_s(s, sizeof s * (n = k * 2));
+		sprintf(s + k - j, " '%zu.%zu+1|%s'", yy, b->x, faces[f]);
+
+		v = b->next;
+		free(b);
 	}
 
 	printf("set window kakeidoscope_range %%val{timestamp}%s\n", s);
-
 	free(s);
-}
-
-static size_t max_face_length(void)
-{
-	size_t l, m = 0;
-
-	for (int i = 0; i < LENGTH(faces); ++i) {
-		l = strlen(faces[i]);
-		if (m < l)
-			m = l;
-	}
-
-	return m;
 }
 
 static size_t num_length(size_t n)
 {
-	int i = !n;
+	size_t l = 1;
 
-	for (; n; ++i)
-		n /= 10;
+	for (size_t p = 10; p <= n; p *= 10)
+		++l;
 
-	return i;
+	return l;
 }
 
 static size_t strtoul_s(const char *s)
@@ -78,17 +62,14 @@ static size_t strtoul_s(const char *s)
 	return n;
 }
 
-static void usage(void)
-{
-	die("usage: kakeidoscope <filename> <window_y> <window_x>");
-}
+static void usage(void) { die("usage: kakeidoscope <filename> <window_y>"); }
 
 int main(int argc, char **argv)
 {
-	if (argc != 4)
+	if (argc != 3)
 		usage();
 
-	make_hl(matching_brackets(argv[1], strtoul_s(argv[2]), strtoul_s(argv[3])));
+	make_hl(matching_brackets(argv[1]), strtoul_s(argv[2]));
 
 	return EXIT_SUCCESS;
 }

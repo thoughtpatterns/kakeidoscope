@@ -67,4 +67,4 @@ def -docstring "initialize kakeidoscope" kakeidoscope-init %{
 	hook global -group kakeidoscope WinCreate .* kakeidoscope-enable-window
 }
 
-hook -once global KakBegin .* kakeidoscope-init
+# hook -once global KakBegin .* kakeidoscope-init

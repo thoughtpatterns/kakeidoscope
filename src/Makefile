@@ -12,14 +12,14 @@ OBJ = $(SRC:.c=.o)
 
 all: kakeidoscope
 
+debug: KAKCFLAGS += -Og
+debug: kakeidoscope
+
 .c.o:
 	$(CC) -o $@ -c $(KAKCFLAGS) $<
 
-config.h:
-	cp config.def.h $@
-
-$(MB)/config.h:
-	cp $(MB)/config.def.h $@
+$(CFG):
+	cp $(@:.h=.def.h) $@
 
 $(OBJ): $(CFG)
 
@@ -38,7 +38,7 @@ install: all
 	chmod 644 "$(DESTDIR)$(MANPREFIX)/man1/kakeidoscope.1"
 
 uninstall:
-	rm -f "$(DESTDIR)$(PREFIX)/bin/kakeidoscope"
-	rm -f "$(DESTDIR)$(MANPREFIX)/man1/kakeidoscope.1"
+	rm -f "$(DESTDIR)$(PREFIX)/bin/kakeidoscope" \
+		"$(DESTDIR)$(MANPREFIX)/man1/kakeidoscope.1"
 
-.PHONY: all clean install uninstall
+.PHONY: all debug clean install uninstall
