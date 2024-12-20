@@ -53,7 +53,7 @@ static size_t strtoul_s(const char *s)
 	char *e;
 	size_t n = strtoul(s, &e, 10);
 
-	if (e != s + strlen(s)) /* e doesn't entirely comprise a number */
+	if (e != s + strlen(s)) /* s doesn't entirely comprise a number */
 		usage();
 
 	return n;

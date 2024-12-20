@@ -1,0 +1,25 @@
+#!/bin/sh -eu
+
+run() {
+	while [ "$#" -gt 0 ]; do
+		printf "%s:\n" "$1" >> "$o"
+		time kakeidoscope "$2" 1 > /dev/null 2>> "$o"
+		[ "$#" -ne 2 ] && printf "\n" >> "$o"
+		shift 2
+	done
+}
+
+main() {
+	b="runtime.balanced"    && : > "$b"
+	u="runtime.unbalancced" && : > "$u"
+	o="runtime.out"         && : > "$o"
+
+	i=0 && n="$((10 ** 3))" && while [ "$((++i))" -le "$n" ]; do
+		printf "{ ( [ ( { } ) ] ) }\n" >> "$b"
+		printf "{ ( [ ( { { ( [ ( {\n" >> "$u"
+	done
+
+	run "10000 balanced braces" "$b" "10000 unbalanced braces" "$u"
+}
+
+main "$@"
