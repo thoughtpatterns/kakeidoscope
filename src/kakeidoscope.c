@@ -1,5 +1,3 @@
-/* see LICENSE file for copyright and license details. */
-
 #include "config.h"
 #include "matching-brackets/src/matching-brackets.h"
 #include "matching-brackets/src/util.h"

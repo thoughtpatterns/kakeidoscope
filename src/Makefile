@@ -1,5 +1,4 @@
 # kakeidoscope - rainbow brackets for kakoune
-# see LICENSE file for copyright and license details.
 
 .POSIX:
 

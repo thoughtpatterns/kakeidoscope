@@ -1,6 +1,6 @@
 main() {
 	for i in b l r; do
-		eval "$i=$(mktemp kakeidoscope.XXXXXX)"
+		eval "$i=$(mktemp /tmp/kakeidoscope.XXXXXX)"
 	done
 
 	i=0 && n="$((10 ** 3))" && while [ "$((++i))" -le "$n" ]; do

@@ -1,5 +1,3 @@
-/* see LICENSE file for copyright and license details. */
-
 #ifndef config_def_h_INCLUDED
 #define config_def_h_INCLUDED
 
