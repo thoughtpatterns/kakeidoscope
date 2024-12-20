@@ -30,10 +30,11 @@ sys	0m 0.00s
 ### Install
 
 ```bash
+cd ~/.config/kak/autoload
 git clone --recurse-submodules https://git.sr.ht/~orchid/kakeidoscope
 cd kakeidoscope/src
 make install # with elevated privileges
-cp ../rc/kakeidoscope.kak ~/.config/kak/autoload
+cp ../rc/kakeidoscope.kak ../..
 ```
 
 ### Uninstall
