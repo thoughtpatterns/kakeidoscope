@@ -7,10 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define BUF_START 64
-#define DECIMAL 10
-#define HL_OFFSET 7
-
 static void make_hl(struct Bracket *, size_t);
 static size_t num_length(size_t);
 static size_t strtoul_s(const char *);
@@ -18,7 +14,8 @@ static void usage(void);
 
 static void make_hl(struct Bracket *head, size_t y)
 {
-	size_t n = BUF_START, j = 0, k = 0, f, yy;
+	const size_t hl_offset = 7; /* non-var chars in <spc>'<y>.<x>+1|<face>' */
+	size_t n = 64 /* arbitrary */, j = 0, k = 0, f, yy;
 	char *s = calloc_s(n, sizeof *s);
 
 	size_t l[length_faces];
@@ -27,7 +24,7 @@ static void make_hl(struct Bracket *head, size_t y)
 
 	for (struct Bracket *b = head, *v; b; b = v) {
 		f = b->n % length_faces, yy = b->y + y,
-		k += (j = num_length(yy) + num_length(b->x) + l[f] + HL_OFFSET);
+		k += (j = num_length(yy) + num_length(b->x) + l[f] + hl_offset);
 
 		if (k > n)
 			s = realloc_s(s, sizeof s * (n = k * 2));
@@ -54,9 +51,9 @@ static size_t num_length(size_t n)
 static size_t strtoul_s(const char *s)
 {
 	char *e;
-	size_t n = strtoul(s, &e, DECIMAL);
+	size_t n = strtoul(s, &e, 10);
 
-	if (e != s + strlen(s))
+	if (e != s + strlen(s)) /* e doesn't entirely comprise a number */
 		usage();
 
 	return n;
