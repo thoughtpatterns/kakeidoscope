@@ -15,7 +15,7 @@ debug: KAKCFLAGS += -ggdb -Og
 debug: kakeidoscope
 
 .c.o:
-	$(CC) -o $@ -c $(KAKCFLAGS) $<
+	$(CC) -c -o $@ $(KAKCFLAGS) $<
 
 $(CFG):
 	cp $(@:.h=.def.h) $@
@@ -23,7 +23,7 @@ $(CFG):
 $(OBJ): $(CFG)
 
 kakeidoscope: $(OBJ)
-	$(CC) $(LIB) $(OBJ) -o $@
+	$(CC) -o $@ $(KAKCFLAGS) $^
 
 clean:
 	rm -f kakeidoscope $(OBJ)

@@ -2,27 +2,20 @@
 
 A plugin for Kakoune which implements simple rainbow bracket highlighting via
 [matching-brackets](https://git.sr.ht/~orchid/matching-brackets). kakeidoscope
-does not parse language features and will thus highlight comments; it will,
-however, ignore unmatched right brackets. Each type of bracket is colored
-independently --- by default, kakeidoscope colors `{} () []`.
+does not parse language features and will thus highlight comments. Each type of
+bracket is colored independently --- by default, kakeidoscope colors `{} () []`.
 
 kakeidoscope is fast enough to be used with idle hooks:
 
 ```
 10000 balanced braces:
-real	0m 0.02s
-user	0m 0.01s
-sys	0m 0.00s
+        0.00 real         0.00 user         0.00 sys
 
 10000 left braces:
-real	0m 0.00s
-user	0m 0.00s
-sys	0m 0.00s
+        0.00 real         0.00 user         0.00 sys
 
 10000 right braces:
-real	0m 0.00s
-user	0m 0.00s
-sys	0m 0.00s
+        0.00 real         0.00 user         0.00 sys
 ```
 
 ## Installation
@@ -34,7 +27,7 @@ cd ~/.config/kak/autoload
 git clone --recurse-submodules https://git.sr.ht/~orchid/kakeidoscope
 cd kakeidoscope/src
 make install # with elevated privileges
-cp ../rc/kakeidoscope.kak ../..
+printf "require-module kakeidoscope" >> ~/.config/kak/kakrc
 ```
 
 ### Uninstall
@@ -62,5 +55,6 @@ you'd prefer to handle highlighting separately, comment out the last line of
 
 ## Debugging
 
-_Very_ simple tests can be found in `test/`. Running `make debug` will enable
-relevant compiler flags.
+_Very_ simple tests can be found in `test/` and are used only to find leaks and
+manage runtime regression. Running `make debug` will enable relevant compiler
+flags (if wanted, edit the `Makefile` flag `-glldb` to suit your debugger).

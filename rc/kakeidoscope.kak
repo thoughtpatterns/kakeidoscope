@@ -1,3 +1,5 @@
+provide-module kakeidoscope %{
+
 decl -hidden int kakeidoscope_timestamp 0
 decl -hidden int-list kakeidoscope_window 0 0 0 0
 
@@ -62,7 +64,9 @@ def -docstring "disable kakeidoscope at window scope" kakeidoscope-disable-windo
 
 def -hidden -docstring "initialize kakeidoscope" kakeidoscope-init %{
 	decl range-specs kakeidoscope_range
-	hook global -group kakeidoscope WinCreate .* kakeidoscope-enable-window
+	hook -group kakeidoscope global WinCreate .* kakeidoscope-enable-window
 }
 
 hook -group kakeidoscope -once global KakBegin .* kakeidoscope-init
+
+}

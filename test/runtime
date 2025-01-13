@@ -1,17 +1,15 @@
-#!/bin/sh -eu
+#!/usr/bin/env sh
+set -eu
 
-run() {
+run()
+{
 	while [ "$#" -gt 0 ]; do
 		printf "%s:\n" "$1" >> "$o"
-		time kakeidoscope "$2" 1 > /dev/null 2>> "$o"
-		[ "$#" -ne 2 ] && printf "\n" >> "$o"
+		> /dev/null 2>> "$o" time kakeidoscope "$2" 1
+		if [ "$#" -ne 2 ]; then printf "\n" >> "$o"; fi
 		shift 2
 	done
 }
 
-main() {
-	o="runtime.out" && : > "$o"
-	. mktests
-}
-
-main "$@"
+o="runtime.out"; : > "$o"
+. mktests

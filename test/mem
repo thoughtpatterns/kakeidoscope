@@ -1,21 +1,25 @@
-#!/bin/sh -eu
+#!/usr/bin/env sh
+set -eu
 
-run() {
+run()
+{
 	while [ "$#" -gt 0 ]; do
 		printf "%s:\n" "$1" >> "$o"
-		valgrind --leak-check=full \
+		valgrind \
+			--leak-check=full \
 			--show-leak-kinds=all \
 			--track-origins=yes \
 			--verbose \
-			kakeidoscope "$2" 1 >> "$o" > /dev/null 2>> "$o"
-		[ "$#" -ne 2 ] && printf "\n" >> "$o"
+			kakeidoscope "$2" 1 > /dev/null 2>> "$o"
+		if [ "$#" -ne 2 ]; then printf "\n" >> "$o"; fi
 		shift 2
 	done
 }
 
-main() {
-	o="mem.out" && : > "$o"
-	. mktests
-}
+if ! which valgrind > /dev/null; then
+	printf "${0##*/}: program 'valgrind' missing\n" >&2
+	exit 1
+fi
 
-main "$@"
+o="mem.out"; : > "$o"
+. mktests

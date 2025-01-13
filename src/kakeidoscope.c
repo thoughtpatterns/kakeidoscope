@@ -16,12 +16,12 @@ static void make_hl(struct Bracket *head, size_t y)
 	size_t n = 64 /* arbitrary */, j = 0, k = 0, f, yy;
 	char *s = calloc_s(n, sizeof *s);
 
-	size_t l[length_faces];
-	for (size_t i = 0; i < length_faces; ++i)
+	size_t l[LENGTH(faces)];
+	for (size_t i = 0; i < LENGTH(faces); ++i)
 		l[i] = strlen(faces[i]);
 
 	for (struct Bracket *b = head, *v; b; b = v) {
-		f = b->n % length_faces, yy = b->y + y,
+		f = b->n % LENGTH(faces), yy = b->y + y,
 		k += (j = num_length(yy) + num_length(b->x) + l[f] + hl_offset);
 
 		if (k > n)
