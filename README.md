@@ -27,7 +27,6 @@ cd ~/.config/kak/autoload
 git clone --recurse-submodules https://git.sr.ht/~orchid/kakeidoscope
 cd kakeidoscope/src
 make install # with elevated privileges
-printf "require-module kakeidoscope" >> ~/.config/kak/kakrc
 ```
 
 ### Uninstall

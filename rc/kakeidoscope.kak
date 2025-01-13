@@ -1,5 +1,3 @@
-provide-module kakeidoscope %{
-
 decl -hidden int kakeidoscope_timestamp 0
 decl -hidden int-list kakeidoscope_window 0 0 0 0
 
@@ -68,5 +66,3 @@ def -hidden -docstring "initialize kakeidoscope" kakeidoscope-init %{
 }
 
 hook -group kakeidoscope -once global KakBegin .* kakeidoscope-init
-
-}
