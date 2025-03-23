@@ -5,11 +5,9 @@ it does not parse language features and will thus highlight comments.
 
 ## Installation
 
-```bash
+```
 cargo install kakeidoscope
 ```
-
-## Configuration
 
 To load the necessary options and some useful functions for `kakeidoscope`,
 place the following snippet into your Kakoune configuration, which loads the
