@@ -1,4 +1,0 @@
-[submodule "src/matching-brackets"]
-	path = src/matching-brackets
-	url = https://git.sr.ht/~orchid/matching-brackets
-	update = merge

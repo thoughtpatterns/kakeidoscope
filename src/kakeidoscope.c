@@ -1,6 +1,6 @@
 #include "config.h"
-#include "matching-brackets/src/matching-brackets.h"
-#include "matching-brackets/src/util.h"
+#include "matching-brackets.h"
+#include "util.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

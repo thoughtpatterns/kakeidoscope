@@ -1,3 +1,9 @@
+## Note
+
+This is the old, C version of this plugin retained for compatibility --- it
+previously relied a submodule which has now been brought into this repository.
+For the new version, see the main branch.
+
 # kakeidoscope
 
 A plugin for Kakoune which implements simple rainbow bracket highlighting via
@@ -43,6 +49,9 @@ level, found in `src/config.def.h`, and the bracket pairs it searches for, found
 in `src/matching-brackets/src/config.def.h`. `make` will create copies of these
 files as `config.h` and `src/matching-brackets/src/config.h`, which can be
 edited --- then reinstalling via `make install` will update your configuration.
+
+matching-brackets offers one option --- the bracket pairs it searches for ---
+which can be found in `src/config.def.h`.
 
 ## Usage
 

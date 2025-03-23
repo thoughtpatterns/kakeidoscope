@@ -4,9 +4,9 @@
 
 include config.mk
 
-CFG = config.h $(MB)/config.h
-LIB = $(MB)/matching-brackets.h $(MB)/util.h
-SRC = kakeidoscope.c $(MB)/matching-brackets.c $(MB)/util.c
+CFG = config.h
+LIB = matching-brackets.h util.h
+SRC = kakeidoscope.c matching-brackets.c util.c
 OBJ = $(SRC:.c=.o)
 
 all: kakeidoscope
