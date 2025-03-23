@@ -9,7 +9,6 @@ readme = "README.md"
 homepage = "https://git.sr.ht/~orchid/kakeidoscope"
 repository = "https://git.sr.ht/~orchid/kakeidoscope"
 license = "0BSD"
-license-file = "LICENSE"
 keywords = ["kakoune"]
 
 [dependencies]
