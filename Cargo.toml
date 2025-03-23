@@ -1,0 +1,16 @@
+[package]
+name = "kakeidoscope"
+version = "0.2.0"
+authors = ["Mohamad Makki <moe.m.makki@gmail.com>"]
+edition = "2024"
+rust-version = "1.85.0"
+description = "A rainbow bracket highlighter for Kakoune."
+readme = "README.md"
+homepage = "https://git.sr.ht/~orchid/kakeidoscope"
+repository = "https://git.sr.ht/~orchid/kakeidoscope"
+license = "0BSD"
+keywords = ["kakoune"]
+
+[dependencies]
+clap = { version = "4.5.32", features = ["derive"] }
+thiserror = "2.0.12"

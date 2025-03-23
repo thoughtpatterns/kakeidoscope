@@ -1,3 +1,1 @@
-*.o
-kakeidoscope
-config.h
+/target
