@@ -17,7 +17,7 @@ define-command -docstring "generate a bracket highlighter for the active buffer"
 			echo -to-file '$kak_response_fifo' %val{selection}
 		}" > "$kak_command_fifo"
 
-		~/.local/src/kakeidoscope/target/debug/kakeidoscope highlight \
+		kakeidoscope highlight \
 			--faces $kak_opt_kakeidoscope_faces \
 			--brackets $kak_opt_kakeidoscope_brackets \
 			--filename "$kak_response_fifo"
