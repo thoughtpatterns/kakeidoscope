@@ -35,6 +35,6 @@ define-command -docstring "enable kakeidoscope at window scope" kakeidoscope-ena
 define-command -docstring "disable kakeidoscope at window scope" kakeidoscope-disable-window %{
 	remove-hooks window kakeidoscope
 	remove-highlighter window/kakeidoscope
-	unset window kakeidoscope_range
-	unset window kakeidoscope_timestamp
+	unset-option window kakeidoscope_range
+	unset-option window kakeidoscope_timestamp
 }
