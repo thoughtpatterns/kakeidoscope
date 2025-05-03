@@ -19,8 +19,8 @@ fn highlight(buffer: &str, brackets: &[BracketPair], faces: &[String]) {
 	let mut nests: HashMap<&BracketPair, i32> =
 		brackets.iter().map(|x| (x, 0)).collect();
 	let mut unmatched: Vec<&BracketPair> = Vec::new();
-	let mut highlighter: String =
-		String::from("set window kakeidoscope_range %val{timestamp}");
+	let mut highlighter =
+		"set window kakeidoscope_range %val{timestamp}".to_string();
 
 	for c in buffer.chars() {
 		if c == 0xa as char {
@@ -66,7 +66,7 @@ fn highlight(buffer: &str, brackets: &[BracketPair], faces: &[String]) {
 }
 
 fn start() -> Result<(), Fatal> {
-	let cli: Cli = Cli::parse();
+	let cli = Cli::parse();
 
 	match &cli.command {
 		Commands::Init => {
