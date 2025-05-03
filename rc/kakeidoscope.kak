@@ -14,7 +14,7 @@ define-command -docstring "generate a bracket highlighter for the active buffer"
 
 		printf %s "evaluate-commands -draft -no-hooks %{
 			execute-keys '%'
-			echo -to-file '$kak_response_fifo' %val{selection}
+			echo -to-file '$kak_response_fifo' -- %val{selection}
 		}" > "$kak_command_fifo"
 
 		kakeidoscope highlight \
