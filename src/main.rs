@@ -4,65 +4,99 @@ mod error;
 use clap::Parser;
 use cli::{Cli, Commands};
 use error::Fatal;
-use std::{collections::HashMap, fs::read_to_string};
+use itertools::Itertools;
+use std::{fmt::Write, fs, path::Path};
 
-#[derive(Debug, Eq, Hash, PartialEq)]
-struct BracketPair<'a> {
-	left: &'a char,
-	right: &'a char,
+#[derive(Debug, Clone)]
+struct Point {
+	bracket: char,
+	x: u64,
+	y: u64,
 }
 
-fn highlight(buffer: &str, brackets: &[BracketPair], faces: &[String]) {
-	let mut x: u32 = 0;
-	let mut y: u32 = 1;
+#[derive(Debug, Clone, Eq, Hash, PartialEq)]
+struct BracketPair {
+	left: char,
+	right: char,
+}
 
-	let mut nests: HashMap<&BracketPair, i32> =
-		brackets.iter().map(|x| (x, 0)).collect();
-	let mut unmatched: Vec<&BracketPair> = Vec::new();
-	let mut highlighter =
-		"set window kakeidoscope_range %val{timestamp}".to_string();
+/// Read a path to a String.
+fn read_path(path: &Path) -> Result<String, Fatal> {
+	fs::read_to_string(path).map_err(|e| Fatal::CannotReadFile {
+		path: path.into(),
+		e,
+	})
+}
 
-	for c in buffer.chars() {
-		if c == 0xa as char {
-			x = 0;
-			y += 1;
-			continue;
-		}
+fn parse_brackets(
+	selections: &str,
+	selections_desc: &str,
+) -> Result<Vec<Point>, Fatal> {
+	let selections = selections
+		.split(' ')
+		.map(|s| s.chars().next().expect("'selections' was empty"));
+	let selections_desc = selections_desc
+		.split(&['.', ',', ' '])
+		.tuples::<(_, _, _, _)>();
 
-		x += 1;
+	selections
+		.zip(selections_desc)
+		.map(|(bracket, (y, x, _, _))| {
+			match (y.parse::<u64>(), x.parse::<u64>()) {
+				(Ok(y), Ok(x)) => Ok(Point { bracket, x, y }),
+				_ => Err(Fatal::PointParse),
+			}
+		})
+		.collect()
+}
 
-		for bracket in brackets {
-			let nest: i32;
+fn highlight(
+	faces: &[String],
+	pairs: &[BracketPair],
+	brackets: &[Point],
+) -> String {
+	let mut level: i32 = 0;
+	let mut unmatched = Vec::<&BracketPair>::new();
 
-			match (
-				c == *bracket.left,
-				c == *bracket.right
-					&& unmatched.last().is_some_and(|x| bracket == *x),
-			) {
-				(false, false) => continue,
-				(true, false) => {
-					nest = nests[bracket];
-					nests.entry(bracket).and_modify(|x| *x += 1);
-					unmatched.push(bracket);
+	brackets.iter().fold(
+		String::from("set window kakeidoscope_range %val{timestamp}"),
+		|mut highlighter, point| {
+			for pair in pairs {
+				let nest: i32;
+
+				match (
+					point.bracket == pair.left,
+					point.bracket == pair.right
+						&& unmatched.last().is_some_and(|p| pair == *p),
+				) {
+					(true, true) => unreachable!(), /* Guaranteed via dedup in 'start()'. */
+					(true, false) => {
+						nest = level;
+						level += 1;
+						unmatched.push(pair);
+					}
+					(false, true) => {
+						level -= 1;
+						nest = level;
+						unmatched.pop();
+					}
+					(false, false) => continue,
 				}
-				(false, true) => {
-					nests.entry(bracket).and_modify(|x| *x -= 1);
-					nest = nests[bracket];
-					unmatched.pop();
-				}
-				_ => unreachable!(), /* We prevent this case in start(). */
+
+				let _ = write!(
+					highlighter,
+					" '{}.{}+1|{}'",
+					point.y,
+					point.x,
+					faces[(nest % faces.len() as i32) as usize]
+				);
+
+				break;
 			}
 
-			highlighter += &format!(
-				" '{y}.{x}+1|{}'",
-				faces[(nest % faces.len() as i32) as usize]
-			);
-
-			break;
-		}
-	}
-
-	println!("{highlighter}");
+			highlighter
+		},
+	)
 }
 
 fn start() -> Result<(), Fatal> {
@@ -72,38 +106,47 @@ fn start() -> Result<(), Fatal> {
 		Commands::Init => {
 			println!("{}", include_str!("../rc/kakeidoscope.kak"));
 		}
-
 		Commands::Highlight {
-			filename,
-			brackets,
 			faces,
+			pairs,
+			selections,
+			selections_desc,
 		} => {
-			if brackets.len() % 2 != 0 {
-				return Err(Fatal::OddBracketsPassed);
+			let selections = &read_path(selections)?;
+			let selections_desc = &read_path(selections_desc)?;
+
+			for buffer in [selections, selections_desc] {
+				if buffer.is_empty() {
+					return Ok(()); /* Nothing to do. */
+				}
 			}
 
-			let brackets: Vec<BracketPair> = brackets
-				.chunks(2)
-				.filter_map(|c| match c {
-					[l, r] => {
-						if l == r {
-							None
-						} else {
-							Some(BracketPair { left: l, right: r })
-						}
-					}
-					_ => None,
+			let brackets = parse_brackets(selections, selections_desc)?;
+
+			if pairs.len() % 2 == 1 {
+				return Err(Fatal::OddBrackets);
+			}
+
+			{
+				let mut refs: Vec<_> = pairs.iter().collect();
+				refs.sort_unstable();
+
+				/* Indexes are guaranteed by 'windows()'. */
+				if let Some(&[a, _]) = refs.windows(2).find(|w| w[0] == w[1]) {
+					return Err(Fatal::DuplicateBrackets { bracket: *a });
+				}
+			}
+
+			let pairs: Vec<_> = pairs
+				.iter()
+				.tuples::<(_, _)>() /* Guaranteed by prior even 'len()' check. */
+				.map(|(l, r)| BracketPair {
+					left: *l,
+					right: *r,
 				})
 				.collect();
 
-			let buffer: String = read_to_string(filename).map_err(|e| {
-				Fatal::CannotReadFile {
-					path: filename.into(),
-					e,
-				}
-			})?;
-
-			highlight(&buffer, &brackets, faces);
+			println!("{}", highlight(faces, &pairs, &brackets));
 		}
 	}
 

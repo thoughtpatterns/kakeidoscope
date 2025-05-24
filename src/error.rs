@@ -7,5 +7,11 @@ pub enum Fatal {
 	CannotReadFile { path: PathBuf, e: io::Error },
 
 	#[error("the number of brackets passed must be even")]
-	OddBracketsPassed,
+	OddBrackets,
+
+	#[error("the bracket '{bracket}' was passed twice")]
+	DuplicateBrackets { bracket: char },
+
+	#[error("could not parse passed '%val{{selections_desc}}'")]
+	PointParse,
 }

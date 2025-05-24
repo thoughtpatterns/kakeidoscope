@@ -1,7 +1,7 @@
 # kakeidoscope
 
-A plugin for Kakoune which implements simple rainbow bracket highlighting ---
-it does not parse language features and will thus highlight comments.
+A plugin for Kakoune which implements simple rainbow bracket highlighting.
+It does not parse language features and will thus highlight comments.
 
 ## Installation
 
@@ -29,6 +29,18 @@ on `kakeidoscope-highlight` and `kakeidoscope-enable-window` to highlight. For
 more detail on the CLI options, see `kakeidoscope help highlight`.
 
 ```
+declare-option str-list kakeidoscope_pairs "{" "}" "(" ")" "[" "]"
 declare-option str-list kakeidoscope_faces red yellow green cyan blue magenta
-declare-option str-list kakeidoscope_brackets "{" "}" "(" ")" "[" "]"
 ```
+
+### Examples
+
+- Given `{(])}`, the `{}` and `()` pair would be highlighted (with `{}` as
+  top-level and `()` as once-nested), and the `]` would be ignored, as it does
+  not close a pair.
+- Given `{([)}`, the `{`, `(`, and `[` would be highlighted (with `{` as
+  top-level, `(` as once-nested, and `[` as twice-nested), and the `)` and `}`
+  would be ignored, as neither closes a pair.
+
+Note that this plugin's behavior is not identical to Kakoune's `show-matching`
+highlighter, as the former uses stricter rules to find a pair.

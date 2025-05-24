@@ -16,15 +16,20 @@ pub enum Commands {
 	/// Print a highlighter for nested brackets of the passed file
 	Highlight {
 		/// List of Kakoune faces to descend through for each bracket nest level
-		#[arg(short = 'a', long, num_args = 1.., required = true)]
+		#[arg(short, long, num_args = 1.., required = true)]
 		faces: Vec<String>,
 
-		/// List of (left, right) bracket pairs to highlight: ex. { } ( ) [ ]
+		/// List of (left, right) bracket pairs to highlight, e.g. { } ( ) [ ]
 		#[arg(short, long, num_args = 1.., required = true)]
-		brackets: Vec<char>,
+		pairs: Vec<char>,
 
-		/// File to generate the highlighter for
+		/// File which contains '%val{selections}' of the window to be highlighted
 		#[arg(short, long)]
-		filename: PathBuf,
+		selections: PathBuf,
+
+		/// File which contains '%val{selections_desc}' of the window to be highlighted
+		#[arg(short = 'd', long)]
+		selections_desc: PathBuf,
 	},
 }
+
