@@ -29,9 +29,11 @@ on `kakeidoscope-highlight` and `kakeidoscope-enable-window` to highlight. For
 more detail on the CLI options, see `kakeidoscope help highlight`.
 
 ```
-declare-option str-list kakeidoscope_pairs "{" "}" "(" ")" "[" "]"
 declare-option str-list kakeidoscope_faces red yellow green cyan blue magenta
+declare-option str-list kakeidoscope_pairs "{" "}" "(" ")" "[" "]"
 ```
+
+For speed's sake, `kakeidoscope_pairs` should not be modified once set.
 
 ### Examples
 
