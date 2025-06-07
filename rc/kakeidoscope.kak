@@ -16,14 +16,37 @@ declare-option -hidden str kakeidoscope_regex %sh{
 	}'
 }
 
-declare-option -hidden int kakeidoscope_running_sum
-declare-option -hidden int kakeidoscope_timestamp 0
 declare-option -hidden range-specs kakeidoscope_range 0
+declare-option -hidden int kakeidoscope_running_sum 0
+declare-option -hidden int kakeidoscope_timestamp 0
+
+define-command -docstring "enable kakeidoscope at window scope" kakeidoscope-enable-window %{
+	add-highlighter window/kakeidoscope ranges kakeidoscope_range
+	hook -group kakeidoscope window NormalIdle .* kakeidoscope-highlight
+	hook -group kakeidoscope window InsertIdle .* kakeidoscope-highlight
+}
+
+define-command -docstring "disable kakeidoscope at window scope" kakeidoscope-disable-window %{
+	remove-hooks window kakeidoscope
+	remove-highlighter window/kakeidoscope
+	unset-option window kakeidoscope_range
+	unset-option window kakeidoscope_timestamp
+}
 
 define-command -params 2 -hidden kakeidoscope-greater-or-equal %{
-    set window kakeidoscope_running_sum %arg{1}
-    set -add window kakeidoscope_running_sum "-%arg{2}"
+    set-option window kakeidoscope_running_sum %arg{1}
+    set-option -add window kakeidoscope_running_sum "-%arg{2}"
     evaluate-commands -draft %{ echo %opt{kakeidoscope_running_sum} }
+}
+
+define-command -docstring "generate a bracket highlighter for the active buffer" kakeidoscope-highlight %{
+	try %{
+		kakeidoscope-greater-or-equal %opt{kakeidoscope_timestamp} %val{timestamp} # '>=' acts as '==', as the former cannot be greater than the latter.
+	} catch %{
+		try %{ kakeidoscope-highlight-impl }
+	}
+
+	set-option window kakeidoscope_timestamp %val{timestamp}
 }
 
 define-command -hidden kakeidoscope-highlight-impl %{
@@ -51,28 +74,5 @@ define-command -hidden kakeidoscope-highlight-impl %{
 			rm "$selections" "$selections_desc"
 		}
 	}
-}
-
-define-command -docstring "generate a bracket highlighter for the active buffer" kakeidoscope-highlight %{
-	try %{
-		kakeidoscope-greater-or-equal %opt{kakeidoscope_timestamp} %val{timestamp} # '>=' acts as '==', as the former cannot be greater than the latter.
-	} catch %{
-		try %{ kakeidoscope-highlight-impl }
-	}
-
-	set window kakeidoscope_timestamp %val{timestamp}
-}
-
-define-command -docstring "enable kakeidoscope at window scope" kakeidoscope-enable-window %{
-	add-highlighter window/kakeidoscope ranges kakeidoscope_range
-	hook -group kakeidoscope window NormalIdle .* kakeidoscope-highlight
-	hook -group kakeidoscope window InsertIdle .* kakeidoscope-highlight
-}
-
-define-command -docstring "disable kakeidoscope at window scope" kakeidoscope-disable-window %{
-	remove-hooks window kakeidoscope
-	remove-highlighter window/kakeidoscope
-	unset-option window kakeidoscope_range
-	unset-option window kakeidoscope_timestamp
 }
 
