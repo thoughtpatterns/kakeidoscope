@@ -44,8 +44,3 @@ declare-option str-list kakeidoscope_faces red yellow green cyan blue magenta
 
 Note that this plugin's behavior is not identical to Kakoune's `show-matching`
 highlighter, as the former uses stricter rules to find a pair.
-
-## Known Issues
-
-Freezes are rare, but present. I belive this is an issue with the FIFO logic,
-and I'll try to fix it when I get a chance.

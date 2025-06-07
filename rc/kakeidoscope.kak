@@ -1,59 +1,63 @@
 ### Begin public options.
 declare-option str-list kakeidoscope_faces red yellow green cyan blue magenta
-declare-option str-list kakeidoscope_pairs "{" "}" "(" ")" "[" "]"
+declare-option str-list kakeidoscope_pairs "{" "}" "(" ")" "[" "]" # For speed's sake, this variable should not be changed once set.
 ### End public options.
 
-declare-option range-specs kakeidoscope_range 0
-declare-option int kakeidoscope_timestamp 0
-
-define-command -docstring "generate a bracket highlighter for the active buffer" kakeidoscope-highlight %{
-	evaluate-commands %sh{
-		if [ "$kak_opt_kakeidoscope_timestamp" -eq "$kak_timestamp" ]
-		then
-			exit
-		fi
-
-		fifo()
-		{
-			mkfifo "$(mktemp -u "${TMPDIR-/tmp}/kakeidoscope.XXXXXX" | tee "$kak_response_fifo")" &
-			cat "$kak_response_fifo"
+declare-option -hidden str kakeidoscope_regex %sh{
+	printf %s "$kak_opt_kakeidoscope_pairs" | awk '{
+		for (i = 1; i <= NF; ++i) {
+			gsub(/</,      "\x01",  $i) # Use "\x01" as a placeholder, to prevent "<lt> -> <lt<gt>".
+			gsub(/>/,      "<gt>",  $i)
+			gsub(/\x01/,   "<lt>",  $i)
+			gsub(/[\\\]]/, "\\\\&", $i)
+			regex = regex $i
 		}
+		print "[" regex "]"
+	}'
+}
 
-		regex()
-		{
-			printf %s "$kak_opt_kakeidoscope_pairs" | awk '{
-				for (i = 1; i <= NF; ++i) {
-					gsub(/</,      "\x01",  $i) # Use "\x01" as a placeholder, to prevent "<lt> -> <lt<gt>".
-					gsub(/>/,      "<gt>",  $i)
-					gsub(/\x01/,   "<lt>",  $i)
-					gsub(/[\\\]]/, "\\\\&", $i)
-					regex = regex $i
-				}
-				print "[" regex "]"
-			}'
-		}
+declare-option -hidden int kakeidoscope_running_sum
+declare-option -hidden int kakeidoscope_timestamp 0
+declare-option -hidden range-specs kakeidoscope_range 0
 
-		selections="$(fifo)"
-		selections_desc="$(fifo)"
+define-command -params 2 -hidden kakeidoscope-greater-or-equal %{
+    set window kakeidoscope_running_sum %arg{1}
+    set -add window kakeidoscope_running_sum "-%arg{2}"
+    evaluate-commands -draft %{ echo %opt{kakeidoscope_running_sum} }
+}
 
-		printf %s "evaluate-commands -draft -no-hooks %{
-			try %{
-				execute-keys '%s$(regex)<ret>)'
+define-command -hidden kakeidoscope-highlight-impl %{
+	evaluate-commands -draft -no-hooks %{
+		execute-keys "%%s%opt{kakeidoscope_regex}<ret>)"
+		evaluate-commands %sh{
+			root="$(mktemp -d)"
+			selections="$root/selections"
+			selections_desc="$root/selections_desc"
+
+			mkfifo "$selections"
+			mkfifo "$selections_desc"
+
+			printf %s "
 				echo -to-file '$selections' %val{selections}
 				echo -to-file '$selections_desc' %val{selections_desc}
-			} catch %{
-				echo -to-file '$selections'
-				echo -to-file '$selections_desc'
-			}
-		}" > "$kak_command_fifo"
+			" > "$kak_command_fifo"
 
-		kakeidoscope highlight                  \
-			--faces $kak_opt_kakeidoscope_faces \
-			--pairs $kak_opt_kakeidoscope_pairs \
-			--selections "$selections"          \
-			--selections-desc "$selections_desc"
+			kakeidoscope highlight                  \
+				--faces $kak_opt_kakeidoscope_faces \
+				--pairs $kak_opt_kakeidoscope_pairs \
+				--selections "$selections"          \
+				--selections-desc "$selections_desc"
 
-		rm "$selections" "$selections_desc"
+			rm "$selections" "$selections_desc"
+		}
+	}
+}
+
+define-command -docstring "generate a bracket highlighter for the active buffer" kakeidoscope-highlight %{
+	try %{
+		kakeidoscope-greater-or-equal %opt{kakeidoscope_timestamp} %val{timestamp} # '>=' acts as '==', as the former cannot be greater than the latter.
+	} catch %{
+		try %{ kakeidoscope-highlight-impl }
 	}
 
 	set window kakeidoscope_timestamp %val{timestamp}
@@ -71,3 +75,4 @@ define-command -docstring "disable kakeidoscope at window scope" kakeidoscope-di
 	unset-option window kakeidoscope_range
 	unset-option window kakeidoscope_timestamp
 }
+
