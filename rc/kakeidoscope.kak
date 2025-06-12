@@ -56,9 +56,7 @@ define-command -hidden kakeidoscope-highlight-impl %{
 			root="$(mktemp -d)"
 			selections="$root/selections"
 			selections_desc="$root/selections_desc"
-
-			mkfifo "$selections"
-			mkfifo "$selections_desc"
+			mkfifo "$selections" "$selections_desc"
 
 			printf %s "
 				echo -to-file '$selections' %val{selections}
@@ -71,8 +69,7 @@ define-command -hidden kakeidoscope-highlight-impl %{
 				--selections "$selections"          \
 				--selections-desc "$selections_desc"
 
-			rm "$selections" "$selections_desc"
+			rm -rf "$root"
 		}
 	}
 }
-
