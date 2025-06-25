@@ -37,7 +37,7 @@ declare-option str-list kakeidoscope_pairs "{" "}" "(" ")" "[" "]"
 
 For speed's sake, `kakeidoscope_pairs` should not be modified once set.
 
-### Examples
+## Examples
 
 - Given `{(])}`, the `{}` and `()` pair would be highlighted (with `{}` as
   top-level and `()` as once-nested), and the `]` would be ignored, as it does
