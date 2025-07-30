@@ -34,9 +34,9 @@ define-command -docstring "disable kakeidoscope at window scope" kakeidoscope-di
 }
 
 define-command -params 2 -hidden kakeidoscope-greater-or-equal %{
-    set-option window kakeidoscope_running_sum %arg{1}
-    set-option -add window kakeidoscope_running_sum "-%arg{2}"
-    evaluate-commands -draft %{ echo %opt{kakeidoscope_running_sum} }
+	set-option window kakeidoscope_running_sum %arg{1}
+	set-option -add window kakeidoscope_running_sum "-%arg{2}"
+	evaluate-commands -draft %{ echo %opt{kakeidoscope_running_sum} }
 }
 
 define-command -docstring "generate a bracket highlighter for the active buffer" kakeidoscope-highlight %{
