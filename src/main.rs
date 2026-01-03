@@ -206,6 +206,11 @@ mod test {
 			[Some(0), Some(1), Some(2), Some(2), Some(1), None, Some(0)],
 		);
 
+		assert_nestsf!(
+			"( 1 [ 2 { 3 } 4 ] 5 > 6 )",
+			[Some(0), Some(1), Some(2), Some(2), Some(1), None, Some(0)],
+		);
+
 		#[rustfmt::skip]
 		assert_nestsf!(
 			"{ ( ) > < > { { ( > ) > { ( } [ > ] > { [ } { > } > { { } < > > > { < } > } ( ) } } [ ( ) ] { }",
