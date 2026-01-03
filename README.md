@@ -1,7 +1,8 @@
 # kakeidoscope
 
 A plugin for Kakoune which implements simple rainbow bracket highlighting.
-It does not parse language features and will thus highlight comments.
+It does not parse language features, and will thus highlight comments. See
+See `/CHANGELOG.md` for history.
 
 ## Installation
 
@@ -11,31 +12,35 @@ cargo install kakeidoscope
 
 ## Usage
 
-To load the necessary options and some useful functions for `kakeidoscope`,
-place the following snippet into your Kakoune configuration, which loads the
-file located at `rc/kakeidoscope.kak`.
+To load the necessary options and wrapper functions for `kakeidoscope`,
+place the below snippet into your configuration, which loads
+`/rc/kakeidoscope.kak`. Note that the `init` subcommand requires the _default_
+cargo feature, `init`.
 
 ```
 evaluate-commands %sh{ kakeidoscope init }
 ```
 
-The following snippet will additonally automatically highlight all windows.
+The below snippet will additonally automatically highlight all windows.
 
 ```
-hook global WinCreate .* kakeidoscope-enable-window
+hook global WinCreate '.*' kakeidoscope-enable-window
 ```
 
-The following options are passed to `kakeidoscope` via the Kakoune command
-`kakeidoscope-highlight`. Configuring these should be enough if you rely only
-on `kakeidoscope-highlight` and `kakeidoscope-enable-window` to highlight. For
-more detail on the CLI options, see `kakeidoscope help highlight`.
+The below options are passed to `kakeidoscope` via the Kakoune command
+`kakeidoscope-highlight`.
 
 ```
-declare-option str-list kakeidoscope_faces red yellow green cyan blue magenta
-declare-option str-list kakeidoscope_pairs "{" "}" "(" ")" "[" "]"
+declare-option int kakeidoscope_faces red yellow green cyan blue magenta
+declare-option regex kakeidoscope_regex '[()[\]{}]'
 ```
 
-For speed's sake, `kakeidoscope_pairs` should not be modified once set.
+For pre-`v1.0.0` configurations, change the `kakeidoscope_pairs` option to
+a regex option, `kakeidoscope_regex`, as above. `kakeidoscope_regex` should
+contain only characters in `{ ()[]{}<> }`, as others will be ignored.
+
+See `kakeidoscope help highlight` for detail on the binary's command-line
+options.
 
 ## Examples
 
@@ -47,4 +52,4 @@ For speed's sake, `kakeidoscope_pairs` should not be modified once set.
   would be ignored, as neither closes a pair.
 
 Note that this plugin's behavior is not identical to Kakoune's `show-matching`
-highlighter, as the former uses stricter rules to find a pair.
+highlighter, as we use stricter rules to find a pair.

@@ -18,16 +18,13 @@
     the `kakeidoscope` binary.
   * Now, we have
     ```
-    declare-option int kakeidoscope_face_count 1
+    declare-option int kakeidoscope_faces red green
     declare-option regex kakeidoscope_regex '[()[\]{}]'
-
-    set-face global kakeidoscope_0 ,,
     ```
-    where faces are generated dynamically, as `kakeidoscope_N`, with `N`
-    in `[0, face_count)`. Rather than define faces with which to construct
-    a regex, etc., we define a regex, and whichever selections it finds are
-    passed to `kakeidoscope`. Note that `kakeidoscope_regex` should now only
-    find characters in `{ ()[]{}<> }`, as others will be ignored.
+    where, rather than define faces with which to construct a regex, etc.,
+    we define a regex, and whichever selections it finds are passed to
+    `kakeidoscope`. Note that `kakeidoscope_regex` should now only find
+    characters in `{ ()[]{}<> }`, as others will be ignored.
 
 ## v0.3.2
 
