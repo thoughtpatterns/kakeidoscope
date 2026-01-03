@@ -10,11 +10,11 @@ pub struct Cli {
 
 #[derive(Debug, Subcommand)]
 pub enum Commands {
-	/// Print KakouneScript to initialize, then exit
+	/// Print KakouneScript to initialize, then exit.
 	#[cfg(feature = "init")]
 	Init,
 
-	/// Print a highlighter for nested brackets of the passed file
+	/// Print a highlighter for nested brackets of the passed file.
 	Highlight {
 		/// List of Kakoune faces to descend through for each nest level
 		#[arg(short, long, num_args = 1.., required = true)]
