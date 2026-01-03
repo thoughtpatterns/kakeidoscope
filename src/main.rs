@@ -64,7 +64,7 @@ fn highlightf(face_count: u32, nests: Vec<Option<u32>>, coords: Vec<Coord>) -> S
 		result
 	};
 
-	let result = "set window kakeidoscope_range %val{timestamp}".to_string();
+	let result = "set-option window kakeidoscope_range %val{timestamp}".to_string();
 	nests.into_iter().zip(coords).filter_map(f).fold(result, g)
 }
 
@@ -163,13 +163,13 @@ mod test {
 			}};
 		}
 
-		assert_highlightf!(0, [], [], "set window kakeidoscope_range %val{timestamp}");
+		assert_highlightf!(0, [], [], "set-option window kakeidoscope_range %val{timestamp}");
 
 		assert_highlightf!(
 			3,
 			[Some(0), Some(1), Some(2), Some(2), Some(1), None, Some(0)],
 			[(1, 1), (2, 2), (3, 3), (4, 3), (5, 2), (7, 2), (8, 1)],
-			"set window kakeidoscope_range %val{timestamp}".to_string()
+			"set-option window kakeidoscope_range %val{timestamp}".to_string()
 				+ " 1.1+1|kakeidoscope_0 2.2+1|kakeidoscope_1 3.3+1|kakeidoscope_2"
 				+ " 4.3+1|kakeidoscope_2 5.2+1|kakeidoscope_1 8.1+1|kakeidoscope_0",
 		);
@@ -178,7 +178,7 @@ mod test {
 			2,
 			[Some(0), Some(1), Some(2), Some(2), Some(1), None, Some(0)],
 			[(1, 1), (2, 2), (3, 3), (4, 3), (5, 2), (7, 2), (8, 1)],
-			"set window kakeidoscope_range %val{timestamp}".to_string()
+			"set-option window kakeidoscope_range %val{timestamp}".to_string()
 				+ " 1.1+1|kakeidoscope_0 2.2+1|kakeidoscope_1 3.3+1|kakeidoscope_0"
 				+ " 4.3+1|kakeidoscope_0 5.2+1|kakeidoscope_1 8.1+1|kakeidoscope_0",
 		);
