@@ -1,9 +1,7 @@
 ### public:
 
-declare-option int kakeidoscope_face_count 1
+declare-option str-list kakeidoscope_faces red yellow green cyan blue magenta
 declare-option regex kakeidoscope_regex '[()[\]{}]'
-
-set-face global kakeidoscope_0 ,,
 
 ### private:
 
@@ -57,9 +55,11 @@ define-command -hidden kakeidoscope-highlight-impl %{
 				echo -to-file '$selections_desc' %val{selections_desc}
 			" > "$kak_command_fifo"
 
-			kakeidoscope highlight                                  \
-				--face-count "$kak_opt_kakeidoscope_face_count" \
-				--selections "$selections"                      \
+			eval set -- "$kak_quoted_opt_kakeidoscope_faces"
+
+			kakeidoscope highlight             \
+				--faces "$@"               \
+				--selections "$selections" \
 				--selections-desc "$selections_desc"
 
 			rm -rf "$root"

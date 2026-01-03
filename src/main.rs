@@ -57,10 +57,17 @@ fn coordsf(selections_desc: String) -> Result<Vec<Coord>, Fatal> {
 		.ok_or(Fatal::SelectionsDescParse)
 }
 
-fn highlightf(face_count: u32, nests: Vec<Option<u32>>, coords: Vec<Coord>) -> String {
+fn highlightf(faces: Vec<String>, nests: Vec<Option<u32>>, coords: Vec<Coord>) -> String {
 	let f = |(nest, coord)| Some((nest?, coord));
 	let g = |mut result: String, (nest, coord): (u32, Coord)| {
-		let _ = write!(result, " {}.{}+1|kakeidoscope_{}", coord.x, coord.y, nest % face_count);
+		let _ = write!(
+			result,
+			" '{}.{}+1|{}'",
+			coord.x,
+			coord.y,
+			faces[nest as usize % faces.len()]
+		);
+
 		result
 	};
 
@@ -102,7 +109,7 @@ fn start() -> Result<(), Fatal> {
 		#[cfg(feature = "init")]
 		Commands::Init => println!("{}", include_str!("../rc/kakeidoscope.kak")),
 		Commands::Highlight {
-			face_count,
+			faces,
 			selections,
 			selections_desc,
 		} => {
@@ -112,7 +119,7 @@ fn start() -> Result<(), Fatal> {
 			let selections_desc = read_to_string(selections_desc)?;
 			let coords = coordsf(selections_desc)?;
 
-			let highlight = highlightf(face_count, nests, coords);
+			let highlight = highlightf(faces, nests, coords);
 
 			println!("{}", highlight);
 		}
@@ -155,32 +162,38 @@ mod test {
 	#[test]
 	fn highlightft() {
 		macro_rules! assert_highlightf {
-			($face_count:expr, [$($nest:expr),* $(,)?], [$(($x:expr, $y:expr)),* $(,)?], $expected:expr $(,)?) => {{
+			([$($faces:expr),* $(,)?], [$($nest:expr),* $(,)?], [$(($x:expr, $y:expr)),* $(,)?], $expected:expr $(,)?) => {{
+				let faces: Vec<_> = vec![$($faces.to_string()),*];
 				let nests: Vec<Option<_>> = vec![$($nest),*];
 				let coords = vec![$(Coord { x: $x, y: $y }),*];
-				let result = highlightf($face_count, nests, coords);
+				let result = highlightf(faces, nests, coords);
 				assert_eq!(result, $expected.to_string());
 			}};
 		}
 
-		assert_highlightf!(0, [], [], "set-option window kakeidoscope_range %val{timestamp}");
-
 		assert_highlightf!(
-			3,
-			[Some(0), Some(1), Some(2), Some(2), Some(1), None, Some(0)],
-			[(1, 1), (2, 2), (3, 3), (4, 3), (5, 2), (7, 2), (8, 1)],
-			"set-option window kakeidoscope_range %val{timestamp}".to_string()
-				+ " 1.1+1|kakeidoscope_0 2.2+1|kakeidoscope_1 3.3+1|kakeidoscope_2"
-				+ " 4.3+1|kakeidoscope_2 5.2+1|kakeidoscope_1 8.1+1|kakeidoscope_0",
+			["kakeidoscope_0"],
+			[],
+			[],
+			"set-option window kakeidoscope_range %val{timestamp}",
 		);
 
 		assert_highlightf!(
-			2,
+			["kakeidoscope_0", "kakeidoscope_1", "kakeidoscope_2"],
 			[Some(0), Some(1), Some(2), Some(2), Some(1), None, Some(0)],
 			[(1, 1), (2, 2), (3, 3), (4, 3), (5, 2), (7, 2), (8, 1)],
 			"set-option window kakeidoscope_range %val{timestamp}".to_string()
-				+ " 1.1+1|kakeidoscope_0 2.2+1|kakeidoscope_1 3.3+1|kakeidoscope_0"
-				+ " 4.3+1|kakeidoscope_0 5.2+1|kakeidoscope_1 8.1+1|kakeidoscope_0",
+				+ " '1.1+1|kakeidoscope_0' '2.2+1|kakeidoscope_1' '3.3+1|kakeidoscope_2'"
+				+ " '4.3+1|kakeidoscope_2' '5.2+1|kakeidoscope_1' '8.1+1|kakeidoscope_0'",
+		);
+
+		assert_highlightf!(
+			["kakeidoscope_0", "kakeidoscope_1"],
+			[Some(0), Some(1), Some(2), Some(2), Some(1), None, Some(0)],
+			[(1, 1), (2, 2), (3, 3), (4, 3), (5, 2), (7, 2), (8, 1)],
+			"set-option window kakeidoscope_range %val{timestamp}".to_string()
+				+ " '1.1+1|kakeidoscope_0' '2.2+1|kakeidoscope_1' '3.3+1|kakeidoscope_0'"
+				+ " '4.3+1|kakeidoscope_0' '5.2+1|kakeidoscope_1' '8.1+1|kakeidoscope_0'",
 		);
 	}
 
