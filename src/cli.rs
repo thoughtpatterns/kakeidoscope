@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, value_parser};
 use std::path::PathBuf;
 
 #[derive(Debug, Parser)]
@@ -17,9 +17,8 @@ pub enum Commands {
 	/// Print a highlighter for nested brackets of the passed file
 	Highlight {
 		/// For each bracket, we highlight with a face, 'kakeidoscope_\d+', where '\d+' is the zero-indexed
-		/// nest level; this option is the number of unique faces to cycle through before returning to the
-		/// first
-		#[arg(short, long)]
+		/// nest level, modulo `face_count`
+		#[arg(short, long, value_parser = value_parser!(u32).range(1..))]
 		face_count: u32,
 
 		/// File which contains '%val{selections}' of the window to be highlighted
