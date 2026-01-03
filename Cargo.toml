@@ -1,6 +1,6 @@
 [package]
 name = "kakeidoscope"
-version = "0.3.2"
+version = "1.0.0"
 authors = ["Mohamad Makki <moe.m.makki@gmail.com>"]
 edition = "2024"
 rust-version = "1.85.0"
