@@ -21,7 +21,7 @@
     declare-option int kakeidoscope_faces red green
     declare-option regex kakeidoscope_regex '[()[\]{}]'
     ```
-    where, rather than define faces with which to construct a regex, etc.,
+    where, rather than define pairs with which to construct a regex, etc.,
     we define a regex, and whichever selections it finds are passed to
     `kakeidoscope`. Note that `kakeidoscope_regex` should now only find
     characters in `{ ()[]{}<> }`, as others will be ignored.
