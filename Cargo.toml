@@ -13,5 +13,8 @@ keywords = ["kakoune"]
 
 [dependencies]
 clap = { version = "4.5.32", features = ["derive"] }
-itertools = "0.14.0"
 thiserror = "2.0.12"
+
+[features]
+default = ["init"]
+init = []

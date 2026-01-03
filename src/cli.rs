@@ -10,18 +10,17 @@ pub struct Cli {
 
 #[derive(Debug, Subcommand)]
 pub enum Commands {
-	/// Print rc to initialize, then exit
+	/// Print KakouneScript to initialize, then exit
+	#[cfg(feature = "init")]
 	Init,
 
 	/// Print a highlighter for nested brackets of the passed file
 	Highlight {
-		/// List of Kakoune faces to descend through for each bracket nest level
-		#[arg(short, long, num_args = 1.., required = true)]
-		faces: Vec<String>,
-
-		/// List of (left, right) bracket pairs to highlight, e.g. { } ( ) [ ]
-		#[arg(short, long, num_args = 1.., required = true)]
-		pairs: Vec<char>,
+		/// For each bracket, we highlight with a face, 'kakeidoscope_\d+', where '\d+' is the zero-indexed
+		/// nest level; this option is the number of unique faces to cycle through before returning to the
+		/// first
+		#[arg(short, long)]
+		face_count: u32,
 
 		/// File which contains '%val{selections}' of the window to be highlighted
 		#[arg(short, long)]
@@ -32,4 +31,3 @@ pub enum Commands {
 		selections_desc: PathBuf,
 	},
 }
-
