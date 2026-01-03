@@ -1,32 +1,23 @@
-### Begin public options.
-declare-option str-list kakeidoscope_faces red yellow green cyan blue magenta
-declare-option str-list kakeidoscope_pairs "{" "}" "(" ")" "[" "]" # For speed's sake, this variable should not be changed once set.
-### End public options.
+### public:
 
-declare-option -hidden str kakeidoscope_regex %sh{
-	printf %s "$kak_opt_kakeidoscope_pairs" | awk '{
-		for (i = 1; i <= NF; ++i) {
-			gsub(/</,      "\x01",  $i) # Use "\x01" as a placeholder, to prevent "<lt> -> <lt<gt>".
-			gsub(/>/,      "<gt>",  $i)
-			gsub(/\x01/,   "<lt>",  $i)
-			gsub(/[\\\]]/, "\\\\&", $i)
-			regex = regex $i
-		}
-		print "[" regex "]"
-	}'
-}
+declare-option int kakeidoscope_face_count 1
+declare-option regex kakeidoscope_regex '[()[\]{}]'
+
+set-face global kakeidoscope_0 ,,
+
+### private:
 
 declare-option -hidden range-specs kakeidoscope_range 0
 declare-option -hidden int kakeidoscope_running_sum 0
 declare-option -hidden int kakeidoscope_timestamp 0
 
-define-command -docstring "enable kakeidoscope at window scope" kakeidoscope-enable-window %{
+define-command -docstring 'enable kakeidoscope at window scope' kakeidoscope-enable-window %{
 	add-highlighter window/kakeidoscope ranges kakeidoscope_range
-	hook -group kakeidoscope window NormalIdle .* kakeidoscope-highlight
-	hook -group kakeidoscope window InsertIdle .* kakeidoscope-highlight
+	hook -group kakeidoscope window NormalIdle '.*' kakeidoscope-highlight
+	hook -group kakeidoscope window InsertIdle '.*' kakeidoscope-highlight
 }
 
-define-command -docstring "disable kakeidoscope at window scope" kakeidoscope-disable-window %{
+define-command -docstring 'disable kakeidoscope at window scope' kakeidoscope-disable-window %{
 	remove-hooks window kakeidoscope
 	remove-highlighter window/kakeidoscope
 	unset-option window kakeidoscope_range
@@ -39,19 +30,22 @@ define-command -params 2 -hidden kakeidoscope-greater-or-equal %{
 	evaluate-commands -draft %{ echo %opt{kakeidoscope_running_sum} }
 }
 
-define-command -docstring "generate a bracket highlighter for the active buffer" kakeidoscope-highlight %{
+define-command -docstring 'generate a bracket highlighter for the active buffer' kakeidoscope-highlight %{
 	try %{
-		kakeidoscope-greater-or-equal %opt{kakeidoscope_timestamp} %val{timestamp} # '>=' acts as '==', as the former cannot be greater than the latter.
+		# We use '>=' as '==', as, here, the left operand cannot be greater than the right.
+		kakeidoscope-greater-or-equal %opt{kakeidoscope_timestamp} %val{timestamp}
 	} catch %{
-		try %{ kakeidoscope-highlight-impl }
-	}
+		kakeidoscope-highlight-impl
+	} catch %{}
 
 	set-option window kakeidoscope_timestamp %val{timestamp}
 }
 
 define-command -hidden kakeidoscope-highlight-impl %{
-	evaluate-commands -draft -no-hooks %{
-		execute-keys "%%s%opt{kakeidoscope_regex}<ret>)"
+	try %{ evaluate-commands -draft -save-regs / -no-hooks %{
+		set-register / %opt{kakeidoscope_regex}
+		execute-keys '%s<ret>)' # If we have no brackets, go to `catch` block.
+
 		evaluate-commands %sh{
 			root="$(mktemp -d)"
 			selections="$root/selections"
@@ -63,13 +57,17 @@ define-command -hidden kakeidoscope-highlight-impl %{
 				echo -to-file '$selections_desc' %val{selections_desc}
 			" > "$kak_command_fifo"
 
-			kakeidoscope highlight                  \
-				--faces $kak_opt_kakeidoscope_faces \
-				--pairs $kak_opt_kakeidoscope_pairs \
-				--selections "$selections"          \
+			kakeidoscope highlight                                  \
+				--face-count "$kak_opt_kakeidoscope_face_count" \
+				--selections "$selections"                      \
 				--selections-desc "$selections_desc"
 
 			rm -rf "$root"
 		}
+	}} catch %{
+		# Without this fallback, if a buffer has a pair of brackets at any point, and all brackets are then
+		# removed, a highlighter will persist to highlight an unrelated character, until another bracket is
+		# re-inserted into thte buffer.
+		set-option window kakeidoscope_range %val{timestamp}
 	}
 }
