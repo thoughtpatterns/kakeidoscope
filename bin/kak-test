@@ -1,0 +1,15 @@
+#!/usr/bin/env -S sh -eu
+
+# A Kakoune wrapper which prioritizes the build-artifact `kakeidoscope`, run
+# without configuration, to test the KakouneScript integration in '/rc/'.
+
+PATH="${0%/*}/../target/debug:$PATH" kak -n -s 'kakeidoscope-tests' -E '
+	evaluate-commands %sh{ kakeidoscope init }
+	hook global WinCreate ".*" kakeidoscope-enable-window
+
+	set-option global kakeidoscope_face_count 4
+	set-face global kakeidoscope_0 green
+	set-face global kakeidoscope_1 cyan
+	set-face global kakeidoscope_2 blue
+	set-face global kakeidoscope_3 magenta
+'
