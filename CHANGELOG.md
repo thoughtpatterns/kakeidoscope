@@ -24,7 +24,7 @@
     where, rather than define pairs with which to construct a regex, etc.,
     we define a regex, and whichever selections it finds are passed to
     `kakeidoscope`. Note that `kakeidoscope_regex` should now only find
-    characters in `{ ()[]{}<> }`, as others will be ignored.
+    characters in "`()[]{}<>`", as others will be ignored.
 
 ## v0.3.2
 

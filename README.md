@@ -37,7 +37,7 @@ declare-option regex kakeidoscope_regex '[()[\]{}]'
 
 For pre-`v1.0.0` configurations, change the `kakeidoscope_pairs` option to
 a regex option, `kakeidoscope_regex`, as above. `kakeidoscope_regex` should
-contain only characters in `{ ()[]{}<> }`, as others will be ignored.
+contain only characters in "`()[]{}<>`", as others will be ignored.
 
 See `kakeidoscope help highlight` for detail on the binary's command-line
 options.
