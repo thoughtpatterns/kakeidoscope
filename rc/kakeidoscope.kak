@@ -67,7 +67,7 @@ define-command -hidden kakeidoscope-highlight-impl %{
 	}} catch %{
 		# Without this fallback, if a buffer has a pair of brackets at any point, and all brackets are then
 		# removed, a highlighter will persist to highlight an unrelated character, until another bracket is
-		# re-inserted into thte buffer.
+		# re-inserted into the buffer.
 		set-option window kakeidoscope_range %val{timestamp}
 	}
 }
