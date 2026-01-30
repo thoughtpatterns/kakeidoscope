@@ -2,7 +2,7 @@
 
 A plugin for Kakoune which implements simple rainbow bracket highlighting.
 It does not parse language features, and will thus highlight comments. See
-See `/CHANGELOG.md` for history.
+`/CHANGELOG.md` for history.
 
 ## Installation
 
